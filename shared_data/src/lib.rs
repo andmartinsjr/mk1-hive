@@ -1,3 +1,5 @@
+#![warn(clippy::pedantic)]
+
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -5,6 +7,7 @@ pub const DATA_COLLECTOR_ADDRESS: &str = "127.0.0.1:9004";
 const MAGIC_NUMBER: u16 = 1234;
 const VERSION_NUMBER: u16 = 1;
 
+#[allow(clippy::cast_possible_truncation)]
 fn unix_now() -> u32 {
     let start = SystemTime::now();
     let since_the_epoch = start
@@ -23,8 +26,10 @@ pub enum CollectorCommandV1 {
     },
 }
 
-pub fn encode_v1(command: CollectorCommandV1) -> Vec<u8> {
-    let json = serde_json::to_string(&command).unwrap();
+#[allow(clippy::cast_possible_truncation, clippy::missing_panics_doc)]
+#[must_use]
+pub fn encode_v1(command: &CollectorCommandV1) -> Vec<u8> {
+    let json = serde_json::to_string(command).unwrap();
     let json_bytes = json.as_bytes();
     let crc = crc32fast::hash(json_bytes);
     let payload_size = json_bytes.len() as u32;
@@ -41,6 +46,8 @@ pub fn encode_v1(command: CollectorCommandV1) -> Vec<u8> {
     result
 }
 
+#[allow(clippy::missing_panics_doc)]
+#[must_use]
 pub fn decode_v1(bytes: &[u8]) -> (u32, CollectorCommandV1) {
     let magic_number = u16::from_be_bytes([bytes[0], bytes[1]]);
     let version_number = u16::from_be_bytes([bytes[2], bytes[3]]);
@@ -80,7 +87,7 @@ mod tests {
             used_memory: 50,
             average_cpu_usage: 0.5,
         };
-        let encoded = encode_v1(command.clone());
+        let encoded = encode_v1(&command);
         let (timestamp, decoded) = decode_v1(&encoded);
         assert_eq!(decoded, command);
         assert!(timestamp > 0);
