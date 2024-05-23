@@ -3,6 +3,7 @@
 use shared_data::CollectorCommandV1;
 
 mod data_collector;
+mod errors;
 mod sender;
 
 fn main() {
@@ -15,6 +16,6 @@ fn main() {
 
     // Listen for commands to send
     while let Ok(command) = rx.recv() {
-        sender::send_command(&command);
+        let _ = sender::send_command(&command);
     }
 }

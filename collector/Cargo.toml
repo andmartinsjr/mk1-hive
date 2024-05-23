@@ -7,3 +7,4 @@ authors = ["Anderson Martins <andmartinsjr@gmail.com>"]
 [dependencies]
 shared_data = { path = "../shared_data" }
 sysinfo = { version = "0.30.12", features = ["apple-app-store"] }
+thiserror = "1.0.61"
