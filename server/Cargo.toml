@@ -6,3 +6,5 @@ authors = ["Anderson Martins <andmartinsjr@gmail.com>"]
 
 [dependencies]
 shared_data = { path = "../shared_data" }
+anyhow = "1.0.86"
+tokio = {version = "1.37.0", features = ["full"]}
