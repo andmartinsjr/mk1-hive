@@ -1,5 +1,7 @@
 #![warn(clippy::pedantic)]
 
+use std::collections::VecDeque;
+
 use shared_data::CollectorCommandV1;
 
 mod data_collector;
@@ -15,7 +17,11 @@ fn main() {
     });
 
     // Listen for commands to send
+    let mut send_queue = VecDeque::with_capacity(120);
     while let Ok(command) = rx.recv() {
-        let _ = sender::send_command(&command);
+        let encoded = shared_data::encode_v1(&command);
+        send_queue.push_back(encoded);
+
+        let _ = sender::send_queue(&mut send_queue);
     }
 }
